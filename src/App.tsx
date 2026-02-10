@@ -187,9 +187,9 @@ function App() {
     setShowingSelectedOnly(true);
   };
 
-  const showAll = () => {
+  /*const showAll = () => {
     setShowingSelectedOnly(false);
-  };
+  };*/
 
   const displayedTags = showingSelectedOnly
     ? tags.filter((t) => t.selected)
