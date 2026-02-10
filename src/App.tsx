@@ -7,6 +7,7 @@ import html2canvas from 'html2canvas';
 
 // Define the shape of each CSV record
 type NametagData = {
+  id: string;
   Name1: string;
   Name2: string;
   Yr: string;
@@ -16,7 +17,6 @@ type NametagData = {
 };
 
 type NametagWithSelection = NametagData & {
-  id: string;
   selected: boolean;
 };
 
@@ -144,6 +144,16 @@ function App() {
     );
   };
 
+  const FIELD_ALIASES: Record<keyof NametagData, string[]> ={
+    Name1: ['Name1','First Name' ],
+    Name2: ['Name2', 'Last Name'],
+    Yr: ['Yr', 'Year'],
+    Child: ['Child', 'Child Tag'],
+    USE_Advanced: ['USE_Advanced', 'Advanced Degree', ],
+    Acad_Orgs: ['Acad_Orgs','Colleges'],
+    id: ['ConstituentId', 'Common Id','CUID']
+  };
+
   // Imports CSV of nametags
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -159,22 +169,39 @@ function App() {
       );
     }
 
-    Papa.parse<NametagData>(file, {
+    Papa.parse(file, {
       header: true,
       skipEmptyLines: true,
       transform: (value) => value.replace(/`/g, "'"),
       complete: (results) => {
-        const newTags = results.data.map((tag, idx) => ({
-          ...tag,
-          id: `tag-${append ? tags.length + idx : idx}`,
-          selected: false,
-        }));
-
-        // Appends or replaces tags depending on append value
+        console.log('Raw CSV rows:', results.data);
+        const newTags: NametagWithSelection[] = results.data.map((row: any, idx: number) => {
+          const tag: any = {};
+  
+          // Map CSV headers to internal fields
+          (Object.keys(FIELD_ALIASES) as (keyof NametagData)[]).forEach((field) => {
+            const aliases = FIELD_ALIASES[field];
+            for (const alias of aliases) {
+              if (row[alias] !== undefined) {
+                tag[field] = row[alias];
+                break;
+              }
+            }
+            if (!tag[field]) tag[field] = ''; // fallback
+          });
+  
+          tag.selected = false;
+  
+          // fallback id if CSV doesn't provide one
+          if (!tag.id) tag.id = `tag-${append ? tags.length + idx : idx}`;
+  
+          return tag as NametagWithSelection;
+        });
+  
         setTags(append ? [...tags, ...newTags] : newTags);
       },
     });
-
+  
     e.target.value = '';
   };
 
