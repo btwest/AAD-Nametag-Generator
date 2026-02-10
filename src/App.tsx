@@ -172,7 +172,7 @@ function App() {
     Papa.parse(file, {
       header: true,
       skipEmptyLines: true,
-      transform: (value) => value.replace(/`/g, "'"),
+      transform: (value) => value.replace(/`/g, "'").replace(",,", ","),
       complete: (results) => {
         console.log('Raw CSV rows:', results.data);
         const newTags: NametagWithSelection[] = results.data.map((row: any, idx: number) => {
