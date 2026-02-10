@@ -1,0 +1,146 @@
+:root {
+  --cu-red: #b31b1b; /* Cornell red */
+  --bs-body-font-family: system-ui, -apple-system, 'Segoe UI', Roboto,
+    'Helvetica Neue', 'Noto Sans', 'Liberation Sans', Arial, sans-serif;
+  --bs-body-font-size: 1rem;
+  --bs-body-font-weight: 400;
+  --bs-body-line-height: 1.5;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--bs-body-font-family);
+  font-size: var(--bs-body-font-size);
+  font-weight: var(--bs-body-font-weight);
+  line-height: var(--bs-body-line-height);
+  color: #212529; /* matches --bs-body-color */
+}
+
+#app-title {
+  color: #fff;
+  font-weight: 500;
+  font-size: 24px;
+}
+
+.navbar {
+  background-color: var(--cu-red);
+  margin-bottom: 0;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.container {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+.all-sheets {
+  background-color: #f2f2f2;
+}
+
+.all-sheets .container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.sheet {
+  width: 8.5in;
+  height: 11in;
+  box-sizing: border-box;
+  padding: 0.5in 0.25in 0in 0.25in;
+  display: grid;
+  grid-template-columns: repeat(2, 4in); /* two columns, each 4in wide */
+  grid-template-rows: repeat(3, 3in); /* three rows, each 3in tall */
+  column-gap: 0; /* no horizontal space */
+  row-gap: 0.5in; /* 0.5" gap between rows */
+  /*page-break-after: always;*/
+  background-color: white;
+}
+
+.nametag {
+  padding: 0.2in;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  position: relative;
+}
+
+.name1 {
+  font-size: 36pt;
+  font-family: 'Arial', sans-serif;
+  font-weight: bold;
+  margin-top: 15.55pt;
+  margin-bottom: 0;
+  line-height: normal;
+  display: flex-start;
+  width: 100%;
+  overflow: hidden;
+  min-height: 1em;
+}
+
+.name2line {
+  font-size: 24pt;
+  font-family: 'Arial', sans-serif;
+  font-weight: bold;
+  margin-top: 5.55pt;
+  margin-bottom: 0;
+  line-height: normal;
+}
+
+.useAdvanced {
+  font-size: 24pt;
+  font-family: 'Arial', sans-serif;
+  font-weight: bold;
+  margin-top: 5.55pt;
+  margin-bottom: 0;
+  line-height: normal;
+  min-height: 1.2em;
+}
+
+.acadOrgs {
+  font-size: 16pt;
+  font-family: 'Arial', sans-serif;
+  font-weight: bold;
+  font-style: italic;
+  /*margin-top: 5.55pt;*/
+  margin-top: auto;
+  margin-bottom: 0;
+  line-height: normal;
+}
+.person-container {
+  position: relative;
+  display: contents;
+}
+.nametag-checkbox {
+  position: absolute;
+  right: -50px; /* Position outside the nametag border */
+  top: 10px; /* Or center it however you prefer */
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+@media print {
+  .nametag-checkbox {
+    display: none;
+  }
+}
+
+.debug-borders .sheet {
+  outline: 1px solid blue;
+}
+
+.debug-borders .nametag {
+  outline: 1px solid red;
+}
+
+.debug-borders .name1,
+.debug-borders .name2line,
+.debug-borders .acadOrgs {
+  outline: 1px solid green;
+}
