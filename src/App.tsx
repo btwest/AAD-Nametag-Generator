@@ -257,6 +257,8 @@ function App() {
   };
 
   const downloadPDF = async () => {
+    setShowDebugBorders(false);
+
     const allSheets = document.querySelectorAll('.all-sheets .sheet');
 
     if (allSheets.length === 0) return;
