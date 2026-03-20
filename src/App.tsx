@@ -14,6 +14,7 @@ type NametagData = {
   Child: string;
   USE_Advanced: string;
   Acad_Orgs: string;
+  omit_class_year: string;
 };
 
 type NametagWithSelection = NametagData & {
@@ -151,7 +152,8 @@ function App() {
     Child: ['Child', 'Child Tag'],
     USE_Advanced: ['USE_Advanced', 'Advanced Degree', ],
     Acad_Orgs: ['Acad_Orgs','Colleges'],
-    id: ['ConstituentId', 'Common Id','CUID']
+    id: ['ConstituentId', 'Common Id','CUID', 'COMMON_ID'],
+    omit_class_year: ['omit_class_year'],
   };
 
   // Imports CSV of nametags
@@ -172,6 +174,7 @@ function App() {
     Papa.parse(file, {
       header: true,
       skipEmptyLines: true,
+      transformHeader: (header) => header.trim(),
       transform: (value) => value.replace(/`/g, "'").replace(",,", ","),
       complete: (results) => {
         console.log('Raw CSV rows:', results.data);
@@ -418,7 +421,7 @@ function App() {
                         >
                           {person.Name2}
                         </div>
-                        {person.Yr && (
+                        {person.Yr && person.omit_class_year !== 'TRUE' && (
                           <>
                             {' '}
                             <div
@@ -502,7 +505,7 @@ function App() {
                         suppressContentEditableWarning
                       >
                         {person.Name2}
-                        {person.Yr ? ` ${person.Yr}` : ''}
+                        {person.Yr && person.omit_class_year !== 'TRUE' ? ` ${person.Yr}` : ''}
                         {person.Child ? `${person.Child}` : ''}
                       </div>
 
