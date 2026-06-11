@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import Papa from 'papaparse';
+import React, { useState, useEffect } from "react";
+import Papa from "papaparse";
 //import html2pdf from 'html2pdf.js';
-import './App.css';
-import { jsPDF } from 'jspdf';
-import html2canvas from 'html2canvas';
+import "./App.css";
+import { jsPDF } from "jspdf";
+import html2canvas from "html2canvas";
 
 // Define the shape of each CSV record
 type NametagData = {
@@ -40,12 +40,12 @@ const chunkArray = <T extends unknown>(arr: T[], size: number): T[][] => {
 function App() {
   // Load events on startup
   const [events, setEvents] = useState<Event[]>(() => {
-    const saved = localStorage.getItem('nametag-events');
+    const saved = localStorage.getItem("nametag-events");
     if (saved) {
       try {
         return JSON.parse(saved);
       } catch (e) {
-        console.error('Failed to parse saved events:', e);
+        console.error("Failed to parse saved events:", e);
         return [];
       }
     }
@@ -55,12 +55,12 @@ function App() {
   const [currentEventId, setCurrentEventId] = useState<string | null>(null);
   const [tags, setTags] = useState<NametagWithSelection[]>([]); // 👈 REMOVE localStorage loading
   const [showingSelectedOnly, setShowingSelectedOnly] = useState(false);
-  const [showDebugBorders, setShowDebugBorders] = useState(true);
+  const [showDebugBorders, setShowDebugBorders] = useState(false);
 
   // Save events to LocalStorage whenever events change
   useEffect(() => {
     if (events.length > 0) {
-      localStorage.setItem('nametag-events', JSON.stringify(events));
+      localStorage.setItem("nametag-events", JSON.stringify(events));
     }
   }, [events]);
 
@@ -69,8 +69,8 @@ function App() {
     if (currentEventId && tags.length > 0) {
       setEvents((prevEvents) =>
         prevEvents.map((event) =>
-          event.id === currentEventId ? { ...event, tags: tags } : event
-        )
+          event.id === currentEventId ? { ...event, tags: tags } : event,
+        ),
       );
     }
   }, [tags, currentEventId]);
@@ -86,16 +86,16 @@ function App() {
   const updateTagField = (
     id: string,
     field: keyof NametagData,
-    value: string
+    value: string,
   ) => {
     setTags((tags) =>
-      tags.map((tag) => (tag.id === id ? { ...tag, [field]: value } : tag))
+      tags.map((tag) => (tag.id === id ? { ...tag, [field]: value } : tag)),
     );
   };
 
   // Creates a new event
   const createNewEvent = () => {
-    const name = prompt('Enter event name:');
+    const name = prompt("Enter event name:");
     if (!name) return;
 
     const newEvent: Event = {
@@ -121,7 +121,7 @@ function App() {
 
   // Deletes an event by removing it from the state
   const deleteEvent = (eventId: string) => {
-    if (!window.confirm('Delete this event?')) return;
+    if (!window.confirm("Delete this event?")) return;
 
     // new array that excludes the event with the given ID
     setEvents(events.filter((e) => e.id !== eventId));
@@ -137,23 +137,23 @@ function App() {
     const event = events.find((e) => e.id === eventId);
     if (!event) return;
 
-    const newName = prompt('Rename event:', event.name);
+    const newName = prompt("Rename event:", event.name);
     if (!newName) return;
 
     setEvents(
-      events.map((e) => (e.id === eventId ? { ...e, name: newName } : e))
+      events.map((e) => (e.id === eventId ? { ...e, name: newName } : e)),
     );
   };
 
-  const FIELD_ALIASES: Record<keyof NametagData, string[]> ={
-    Name1: ['Name1','First Name' ],
-    Name2: ['Name2', 'Last Name'],
-    Yr: ['Yr', 'Year'],
-    Child: ['Child', 'Child Tag'],
-    USE_Advanced: ['USE_Advanced', 'Advanced Degree', ],
-    Acad_Orgs: ['Acad_Orgs','Colleges'],
-    id: ['ConstituentId', 'Common Id','CUID', 'COMMON_ID'],
-    omit_class_year: ['omit_class_year'],
+  const FIELD_ALIASES: Record<keyof NametagData, string[]> = {
+    Name1: ["Name1", "First Name"],
+    Name2: ["Name2", "Last Name"],
+    Yr: ["Yr", "Year"],
+    Child: ["Child", "Child Tag"],
+    USE_Advanced: ["USE_Advanced", "Advanced Degree"],
+    Acad_Orgs: ["Acad_Orgs", "Colleges"],
+    id: ["ConstituentId", "Common Id", "CUID", "COMMON_ID"],
+    omit_class_year: ["omit_class_year"],
   };
 
   // Imports CSV of nametags
@@ -167,7 +167,7 @@ function App() {
       append = window.confirm(
         `You already have ${tags.length} nametags loaded.\n\n` +
           `Click OK to ADD these new tags.\n` +
-          `Click Cancel to REPLACE all existing tags.`
+          `Click Cancel to REPLACE all existing tags.`,
       );
     }
 
@@ -177,41 +177,45 @@ function App() {
       transformHeader: (header) => header.trim(),
       transform: (value) => value.replace(/`/g, "'").replace(",,", ","),
       complete: (results) => {
-        console.log('Raw CSV rows:', results.data);
-        const newTags: NametagWithSelection[] = results.data.map((row: any, idx: number) => {
-          const tag: any = {};
-  
-          // Map CSV headers to internal fields
-          (Object.keys(FIELD_ALIASES) as (keyof NametagData)[]).forEach((field) => {
-            const aliases = FIELD_ALIASES[field];
-            for (const alias of aliases) {
-              if (row[alias] !== undefined) {
-                tag[field] = row[alias];
-                break;
-              }
-            }
-            if (!tag[field]) tag[field] = ''; // fallback
-          });
-  
-          tag.selected = false;
-  
-          // fallback id if CSV doesn't provide one
-          if (!tag.id) tag.id = `tag-${append ? tags.length + idx : idx}`;
-  
-          return tag as NametagWithSelection;
-        });
-  
+        console.log("Raw CSV rows:", results.data);
+        const newTags: NametagWithSelection[] = results.data.map(
+          (row: any, idx: number) => {
+            const tag: any = {};
+
+            // Map CSV headers to internal fields
+            (Object.keys(FIELD_ALIASES) as (keyof NametagData)[]).forEach(
+              (field) => {
+                const aliases = FIELD_ALIASES[field];
+                for (const alias of aliases) {
+                  if (row[alias] !== undefined) {
+                    tag[field] = row[alias];
+                    break;
+                  }
+                }
+                if (!tag[field]) tag[field] = ""; // fallback
+              },
+            );
+
+            tag.selected = false;
+
+            // fallback id if CSV doesn't provide one
+            if (!tag.id) tag.id = `tag-${append ? tags.length + idx : idx}`;
+
+            return tag as NametagWithSelection;
+          },
+        );
+
         setTags(append ? [...tags, ...newTags] : newTags);
       },
     });
-  
-    e.target.value = '';
+
+    e.target.value = "";
   };
 
   const showSelectedOnly = () => {
     const selectedCount = tags.filter((t) => t.selected).length;
     if (selectedCount === 0) {
-      alert('Please select at least one nametag.');
+      alert("Please select at least one nametag.");
       return;
     }
     setShowingSelectedOnly(true);
@@ -228,8 +232,8 @@ function App() {
   const toggleSelection = (id: string) => {
     setTags(
       tags.map((tag) =>
-        tag.id === id ? { ...tag, selected: !tag.selected } : tag
-      )
+        tag.id === id ? { ...tag, selected: !tag.selected } : tag,
+      ),
     );
   };
 
@@ -246,15 +250,15 @@ function App() {
 
     if (
       window.confirm(
-        'Are you sure you want to clear all nametags from this event?'
+        "Are you sure you want to clear all nametags from this event?",
       )
     ) {
       setTags([]);
       // Update the event to have empty tags
       setEvents((prevEvents) =>
         prevEvents.map((event) =>
-          event.id === currentEventId ? { ...event, tags: [] } : event
-        )
+          event.id === currentEventId ? { ...event, tags: [] } : event,
+        ),
       );
     }
   };
@@ -262,36 +266,36 @@ function App() {
   const downloadPDF = async () => {
     setShowDebugBorders(false);
 
-    const allSheets = document.querySelectorAll('.all-sheets .sheet');
+    const allSheets = document.querySelectorAll(".all-sheets .sheet");
 
     if (allSheets.length === 0) return;
 
     const pdf = new jsPDF({
-      unit: 'in',
-      format: 'letter',
-      orientation: 'portrait',
+      unit: "in",
+      format: "letter",
+      orientation: "portrait",
     });
 
     for (let i = 0; i < allSheets.length; i++) {
       const sheet = allSheets[i] as HTMLElement;
 
       const canvas = await html2canvas(sheet, { scale: 2 });
-      const imgData = canvas.toDataURL('image/jpeg', 1.0);
+      const imgData = canvas.toDataURL("image/jpeg", 1.0);
 
       if (i > 0) {
         pdf.addPage();
       }
 
-      pdf.addImage(imgData, 'JPEG', 0, 0, 8.5, 11);
+      pdf.addImage(imgData, "JPEG", 0, 0, 8.5, 11);
     }
 
-    pdf.save('all-nametags.pdf');
+    pdf.save("all-nametags.pdf");
   };
 
   const selectedCount = tags.filter((t) => t.selected).length;
 
   return (
-    <div className={`App ${showDebugBorders ? 'debug-borders' : ''}`}>
+    <div className={`App ${showDebugBorders ? "debug-borders" : ""}`}>
       <nav className="navbar navbar-expand-lg navbar-dark">
         <div className="container">
           <span id="app-title" className="d-none d-md-block">
@@ -307,9 +311,9 @@ function App() {
       <div
         className="event-management"
         style={{
-          marginBottom: '20px',
-          padding: '10px',
-          border: '1px solid #ccc',
+          marginBottom: "20px",
+          padding: "10px",
+          border: "1px solid #ccc",
         }}
       >
         <div className="container">
@@ -317,10 +321,10 @@ function App() {
           <button onClick={createNewEvent}>+ New Event</button>
 
           {events.length > 0 && (
-            <div style={{ marginTop: '10px' }}>
+            <div style={{ marginTop: "10px" }}>
               <label>Switch to event: </label>
               <select
-                value={currentEventId || ''}
+                value={currentEventId || ""}
                 onChange={(e) => switchToEvent(e.target.value)}
               >
                 <option value="">-- Select Event --</option>
@@ -345,7 +349,7 @@ function App() {
           )}
 
           {currentEventId && (
-            <div style={{ marginTop: '10px' }}>
+            <div style={{ marginTop: "10px" }}>
               <strong>Current Event: </strong>
               {events.find((e) => e.id === currentEventId)?.name}
             </div>
@@ -366,7 +370,7 @@ function App() {
               <button onClick={selectAll}>Select All</button>
               <button onClick={deselectAll}>Deselect All</button>
               <button onClick={() => setShowDebugBorders(!showDebugBorders)}>
-                {showDebugBorders ? 'Hide' : 'Show'} Debug Borders
+                {showDebugBorders ? "Hide" : "Show"} Debug Borders
               </button>
               <button onClick={clearData}>Clear All Data</button>
             </>
@@ -377,8 +381,6 @@ function App() {
           <p>Create or select an event to get started.</p>
         </div>
       )}
-
-      {/* ... rest of your existing JSX ... */}
 
       <div className="all-sheets">
         <div className="container">
@@ -397,8 +399,8 @@ function App() {
                         onBlur={(e) =>
                           updateTagField(
                             person.id,
-                            'Name1',
-                            e.currentTarget.textContent || ''
+                            "Name1",
+                            e.currentTarget.textContent || "",
                           )
                         }
                       >
@@ -413,28 +415,28 @@ function App() {
                           onBlur={(e) =>
                             updateTagField(
                               person.id,
-                              'Name2',
-                              e.currentTarget.textContent || ''
+                              "Name2",
+                              e.currentTarget.textContent || "",
                             )
                           }
-                          style={{ display: 'inline' }}
+                          style={{ display: "inline" }}
                         >
                           {person.Name2}
                         </div>
-                        {person.Yr && person.omit_class_year !== 'TRUE' && (
+                        {person.Yr && person.omit_class_year !== "TRUE" && (
                           <>
-                            {' '}
+                            {" "}
                             <div
                               contentEditable
                               suppressContentEditableWarning
                               onBlur={(e) =>
                                 updateTagField(
                                   person.id,
-                                  'Yr',
-                                  e.currentTarget.textContent || ''
+                                  "Yr",
+                                  e.currentTarget.textContent || "",
                                 )
                               }
-                              style={{ display: 'inline' }}
+                              style={{ display: "inline" }}
                             >
                               {person.Yr}
                             </div>
@@ -442,18 +444,18 @@ function App() {
                         )}
                         {person.Child && (
                           <>
-                            {''}
+                            {""}
                             <div
                               contentEditable
                               suppressContentEditableWarning
                               onBlur={(e) =>
                                 updateTagField(
                                   person.id,
-                                  'Child',
-                                  e.currentTarget.textContent || ''
+                                  "Child",
+                                  e.currentTarget.textContent || "",
                                 )
                               }
-                              style={{ display: 'inline' }}
+                              style={{ display: "inline" }}
                             >
                               {person.Child}
                             </div>
@@ -469,8 +471,8 @@ function App() {
                         onBlur={(e) =>
                           updateTagField(
                             person.id,
-                            'USE_Advanced',
-                            e.currentTarget.textContent || ''
+                            "USE_Advanced",
+                            e.currentTarget.textContent || "",
                           )
                         }
                       >
@@ -482,6 +484,13 @@ function App() {
                         className="acadOrgs"
                         contentEditable
                         suppressContentEditableWarning
+                        onBlur={(e) =>
+                          updateTagField(
+                            person.id,
+                            "Acad_Orgs",
+                            e.currentTarget.textContent || "",
+                          )
+                        }
                       >
                         {person.Acad_Orgs}
                       </div>
@@ -499,14 +508,12 @@ function App() {
                       <div className="name1">{person.Name1}</div>
 
                       {/* Line 2: Last name + Year + Child */}
-                      <div
-                        className="name2line"
-                        contentEditable
-                        suppressContentEditableWarning
-                      >
+                      <div className="name2line" suppressContentEditableWarning>
                         {person.Name2}
-                        {person.Yr && person.omit_class_year !== 'TRUE' ? ` ${person.Yr}` : ''}
-                        {person.Child ? `${person.Child}` : ''}
+                        {person.Yr && person.omit_class_year !== "TRUE"
+                          ? ` ${person.Yr}`
+                          : ""}
+                        {person.Child ? `${person.Child}` : ""}
                       </div>
 
                       {/* Line 3: Advanced degree */}
@@ -522,6 +529,13 @@ function App() {
                         className="acadOrgs"
                         contentEditable
                         suppressContentEditableWarning
+                        onBlur={(e) =>
+                          updateTagField(
+                            person.id,
+                            "Acad_Orgs",
+                            e.currentTarget.textContent || "",
+                          )
+                        }
                       >
                         {person.Acad_Orgs}
                       </div>
