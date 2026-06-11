@@ -131,6 +131,65 @@ body {
   }
 }
 
+.help-page {
+  padding: 2rem 1rem;
+  max-width: 800px;
+}
+
+.help-page h2 {
+  color: var(--cu-red);
+  margin-top: 2rem;
+  margin-bottom: 0.5rem;
+  font-size: 1.4rem;
+}
+
+.help-page h3 {
+  margin-top: 1.25rem;
+  margin-bottom: 0.25rem;
+  font-size: 1.1rem;
+}
+
+.help-page p,
+.help-page li {
+  line-height: 1.6;
+  margin-bottom: 0.4rem;
+}
+
+.help-page ol,
+.help-page ul {
+  padding-left: 1.5rem;
+}
+
+.help-page code {
+  background: #f0f0f0;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 0.9em;
+}
+
+.help-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.95rem;
+}
+
+.help-table th,
+.help-table td {
+  text-align: left;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+}
+
+.help-table th {
+  background-color: var(--cu-red);
+  color: white;
+}
+
+.help-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
 .debug-borders .sheet {
   outline: 1px solid blue;
 }

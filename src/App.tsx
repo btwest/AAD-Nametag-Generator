@@ -56,6 +56,7 @@ function App() {
   const [tags, setTags] = useState<NametagWithSelection[]>([]); // 👈 REMOVE localStorage loading
   const [showingSelectedOnly, setShowingSelectedOnly] = useState(false);
   const [showDebugBorders, setShowDebugBorders] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
 
   // Save events to LocalStorage whenever events change
   useEffect(() => {
@@ -302,17 +303,101 @@ function App() {
   return (
     <div className={`App ${showDebugBorders ? "debug-borders" : ""}`}>
       <nav className="navbar navbar-expand-lg navbar-dark">
-        <div className="container">
+        <div className="container" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <span id="app-title" className="d-none d-md-block">
             AAD Nametag Generator
           </span>
-          {/* Optional: Add Cornell logo if you have it */}
-          {/* <a className="navbar-brand p-0 m-0" href="/">
-          <img src="cornell-seal.svg" alt="Cornell Logo" height="45" className="d-inline-block align-text-top">
-        </a> */}
+          <button
+            onClick={() => setShowHelp(!showHelp)}
+            style={{ background: "none", border: "1px solid white", color: "white", padding: "4px 12px", cursor: "pointer", borderRadius: "4px" }}
+          >
+            {showHelp ? "← Back to App" : "Help"}
+          </button>
         </div>
       </nav>
-      {/* Event Management Section */}
+      {showHelp ? (
+        <div className="container help-page">
+          <h2>About This Tool</h2>
+          <p>
+            The AAD Nametag Generator is a browser-based tool for creating printable nametags for Cornell Alumni Affairs &amp; Development events. It imports attendee data from a CSV file, allows inline editing of individual fields, and exports a print-ready PDF.
+          </p>
+          <p>
+            Each person gets two side-by-side nametags per row (3 rows per page = 6 people per sheet). The tags are designed to be peeled and folded together. Edits to either tag are reflected in both.
+          </p>
+
+          <h2>Workflow</h2>
+          <ol>
+            <li><strong>Pull registration list from iModules.</strong> Export the event registration list and collect the <strong>CUIDs</strong> (Common IDs) of all registrants.</li>
+            <li><strong>Pull the nametag report from OBIEE.</strong> In OBIEE, navigate to <em>People &amp; Relationships &gt; Nametags</em>. Run the report using the CUIDs from step 1 and export as CSV.</li>
+            <li><strong>Create an event</strong> in this tool and upload the CSV.</li>
+            <li><strong>Review and edit</strong> nametags as needed — click any field to edit inline.</li>
+            <li><strong>Download PDF</strong> when ready to print.</li>
+          </ol>
+
+          <h2>CSV Column Headers</h2>
+          <p>The tool maps CSV column headers to internal fields using accepted aliases. Headers are <strong>case-sensitive</strong> and must match exactly (leading/trailing whitespace is trimmed automatically).</p>
+          <table className="help-table">
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Accepted Column Headers</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>First Name</td><td><code>Name1</code>, <code>First Name</code></td></tr>
+              <tr><td>Last Name</td><td><code>Name2</code>, <code>Last Name</code></td></tr>
+              <tr><td>Class Year</td><td><code>Yr</code>, <code>Class Tag</code>, <code>Class Year</code></td></tr>
+              <tr><td>Child Tag</td><td><code>Child</code>, <code>Child Tag</code>, <code>Child Tag List</code></td></tr>
+              <tr><td>Advanced Degree</td><td><code>USE_Advanced</code>, <code>Advanced Degree</code></td></tr>
+              <tr><td>Colleges / Orgs</td><td><code>Acad_Orgs</code>, <code>Colleges</code></td></tr>
+              <tr><td>CUID</td><td><code>ConstituentId</code>, <code>Common Id</code>, <code>CUID</code>, <code>COMMON_ID</code></td></tr>
+              <tr><td>Omit Class Year</td><td><code>omit_class_year</code>, <code>Omit Class Year</code>, <code>Omit Yr</code>, <code>OMIT CLASS YEAR</code></td></tr>
+            </tbody>
+          </table>
+          <p>If a column header doesn't match any alias, that field will be blank on the nametag. Open the browser console (F12) to see raw parsed rows if something looks off.</p>
+          <p>Set <strong>Omit Class Year</strong> to <code>TRUE</code> to suppress the class year for a person. Any other value (including <code>FALSE</code> or blank) will show the year if one is present.</p>
+
+          <h2>Features</h2>
+          <h3>Events</h3>
+          <ul>
+            <li>Create multiple named events, each with their own nametag list</li>
+            <li>Events are saved to browser local storage — they persist across page refreshes</li>
+            <li>Switch between events using the dropdown; rename or delete at any time</li>
+          </ul>
+          <h3>Importing CSV</h3>
+          <ul>
+            <li>When uploading to an event that already has nametags, you'll be prompted to <strong>Add</strong> or <strong>Replace</strong></li>
+            <li>When adding, any person whose CUID already exists will be <strong>updated</strong> rather than duplicated</li>
+            <li>People without a CUID in the CSV are always appended as new entries</li>
+          </ul>
+          <h3>Editing Nametags</h3>
+          <ul>
+            <li>Click any field on either tag to edit it inline</li>
+            <li>Edits save automatically when you click away</li>
+            <li>Changes are auto-saved to the current event in local storage</li>
+          </ul>
+          <h3>Selecting &amp; Filtering</h3>
+          <ul>
+            <li>Use the checkbox on the right tag to select individual nametags</li>
+            <li><strong>Select All / Deselect All</strong> for bulk selection</li>
+            <li><strong>Show Selected</strong> filters the view to only selected nametags — useful for printing a subset</li>
+          </ul>
+          <h3>Downloading PDF</h3>
+          <ul>
+            <li>Exports all currently displayed nametags as a letter-size (8.5" × 11") PDF</li>
+            <li>If in "Show Selected" mode, only selected tags are exported</li>
+            <li>Debug borders are automatically hidden in the PDF</li>
+          </ul>
+
+          <h2>Important Notes</h2>
+          <ul>
+            <li><strong>Data is stored in the browser only.</strong> Nothing is sent to a server. Clearing browser data or switching browsers will lose your events.</li>
+            <li><strong>One browser = one data store.</strong> Events created in Chrome won't appear in Firefox.</li>
+            <li>If the PDF layout looks misaligned, try setting your browser zoom to 100% before downloading.</li>
+          </ul>
+        </div>
+      ) : (
+      <>{/* Event Management Section */}
       <div
         className="event-management"
         style={{
@@ -620,6 +705,8 @@ function App() {
           ))}
         </div>
       </div>
+    </>
+    )}
     </div>
   );
 }
