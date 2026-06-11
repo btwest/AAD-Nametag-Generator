@@ -148,7 +148,7 @@ function App() {
   const FIELD_ALIASES: Record<keyof NametagData, string[]> = {
     Name1: ["Name1", "First Name"],
     Name2: ["Name2", "Last Name"],
-    Yr: ["Yr", "Year"],
+    Yr: ["Yr", "Class Tag", "Class Year"],
     Child: ["Child", "Child Tag", "Child Tag List"],
     USE_Advanced: ["USE_Advanced", "Advanced Degree"],
     Acad_Orgs: ["Acad_Orgs", "Colleges"],
@@ -510,21 +510,89 @@ function App() {
                         className="nametag-checkbox"
                       />
                       {/* Line 1: First name only */}
-                      <div className="name1">{person.Name1}</div>
+                      <div
+                        className="name1"
+                        contentEditable
+                        suppressContentEditableWarning
+                        onBlur={(e) =>
+                          updateTagField(
+                            person.id,
+                            "Name1",
+                            e.currentTarget.textContent || "",
+                          )
+                        }
+                      >
+                        {person.Name1}
+                      </div>
 
                       {/* Line 2: Last name + Year + Child */}
-                      <div className="name2line" suppressContentEditableWarning>
-                        {person.Name2}
-                        {person.Yr && person.omit_class_year !== "TRUE"
-                          ? ` ${person.Yr}`
-                          : ""}
-                        {person.Child ? `${person.Child}` : ""}
+                      <div className="name2line">
+                        <div
+                          contentEditable
+                          suppressContentEditableWarning
+                          onBlur={(e) =>
+                            updateTagField(
+                              person.id,
+                              "Name2",
+                              e.currentTarget.textContent || "",
+                            )
+                          }
+                          style={{ display: "inline" }}
+                        >
+                          {person.Name2}
+                        </div>
+                        {person.Yr && person.omit_class_year !== "TRUE" && (
+                          <>
+                            {" "}
+                            <div
+                              contentEditable
+                              suppressContentEditableWarning
+                              onBlur={(e) =>
+                                updateTagField(
+                                  person.id,
+                                  "Yr",
+                                  e.currentTarget.textContent || "",
+                                )
+                              }
+                              style={{ display: "inline" }}
+                            >
+                              {person.Yr}
+                            </div>
+                          </>
+                        )}
+                        {person.Child && (
+                          <>
+                            {""}
+                            <div
+                              contentEditable
+                              suppressContentEditableWarning
+                              onBlur={(e) =>
+                                updateTagField(
+                                  person.id,
+                                  "Child",
+                                  e.currentTarget.textContent || "",
+                                )
+                              }
+                              style={{ display: "inline" }}
+                            >
+                              {person.Child}
+                            </div>
+                          </>
+                        )}
                       </div>
 
                       {/* Line 3: Advanced degree */}
                       <div
                         className="useAdvanced"
+                        contentEditable
                         suppressContentEditableWarning
+                        onBlur={(e) =>
+                          updateTagField(
+                            person.id,
+                            "USE_Advanced",
+                            e.currentTarget.textContent || "",
+                          )
+                        }
                       >
                         {person.USE_Advanced}
                       </div>
