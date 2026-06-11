@@ -210,7 +210,24 @@ function App() {
           },
         );
 
-        setTags(append ? [...tags, ...newTags] : newTags);
+        if (append) {
+          let merged = [...tags];
+          for (const newTag of newTags) {
+            const isRealId = !newTag.id.startsWith("tag-");
+            const existingIndex = isRealId
+              ? merged.findIndex((t) => t.id === newTag.id)
+              : -1;
+
+            if (existingIndex !== -1) {
+              merged[existingIndex] = newTag;
+            } else {
+              merged.push(newTag);
+            }
+          }
+          setTags(merged);
+        } else {
+          setTags(newTags);
+        }
       },
     });
 
