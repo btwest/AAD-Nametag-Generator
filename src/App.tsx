@@ -149,11 +149,16 @@ function App() {
     Name1: ["Name1", "First Name"],
     Name2: ["Name2", "Last Name"],
     Yr: ["Yr", "Year"],
-    Child: ["Child", "Child Tag"],
+    Child: ["Child", "Child Tag", "Child Tag List"],
     USE_Advanced: ["USE_Advanced", "Advanced Degree"],
     Acad_Orgs: ["Acad_Orgs", "Colleges"],
     id: ["ConstituentId", "Common Id", "CUID", "COMMON_ID"],
-    omit_class_year: ["omit_class_year"],
+    omit_class_year: [
+      "omit_class_year",
+      "Omit Class Year",
+      "Omit Yr",
+      "OMIT CLASS YEAR",
+    ],
   };
 
   // Imports CSV of nametags
